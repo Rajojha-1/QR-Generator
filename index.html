@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR generator</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+
+</head>
+<body>
+    <main class="page">
+        <section class="panel controls">
+            <h1>QR Generator</h1>
+            <p class="subtitle">Handles large payloads and auto-selects QR version from your text size.</p>
+
+            <label for="qrInput">Content</label>
+            <textarea id="qrInput" rows="7" placeholder="Paste text, URL, JSON, or other data..."></textarea>
+
+            <div class="row">
+                <div class="field">
+                    <label for="contentType">Format</label>
+                    <select id="contentType">
+                        <option value="auto">Auto</option>
+                        <option value="text">Text</option>
+                        <option value="url">URL</option>
+                        <option value="email">Email</option>
+                        <option value="phone">Phone</option>
+                        <option value="sms">SMS</option>
+                        <option value="json">JSON</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="errorLevel">Error correction</label>
+                    <select id="errorLevel">
+                        <option value="L">L (largest capacity)</option>
+                        <option value="M" selected>M (balanced)</option>
+                        <option value="Q">Q (safer scan)</option>
+                        <option value="H">H (strongest)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="field">
+                    <label for="canvasSize">Resolution</label>
+                    <select id="canvasSize">
+                        <option value="256">144p</option>
+                        <option value="426">240p</option>
+                        <option value="640" selected>360p</option>
+                        <option value="854">480p</option>
+                        <option value="1280">720p</option>
+                        <option value="1920">1080p</option>
+                        <option value="2560">1440p</option>
+                        <option value="3840">4K (2160p)</option>
+                        <option value="7680">8K (4320p)</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="margin">Quiet zone (modules)</label>
+                    <input id="margin" type="number" min="2" max="10" step="1" value="4">
+                </div>
+            </div>
+
+            <div class="row logo-row">
+                <div class="field">
+                    <label for="logoUpload">Logo image</label>
+                    <input id="logoUpload" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+                </div>
+                <div class="field logo-actions">
+                    <label class="checkline" for="logoToggle">
+                        <input id="logoToggle" type="checkbox" checked>
+                        Show logo
+                    </label>
+                    <button id="removeLogoBtn" type="button">Remove Logo</button>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button id="generateBtn" class="primary">Generate</button>
+                <button id="clearBtn" type="button">Clear</button>
+                <button id="downloadBtn" type="button" disabled>Download PNG</button>
+            </div>
+
+            <p id="status" class="status" aria-live="polite"></p>
+        </section>
+
+        <section class="panel preview">
+            <canvas id="qrCanvas" width="420" height="420"></canvas>
+            <div class="meta">
+                <p><strong>Version:</strong> <span id="metaVersion">-</span></p>
+                <p><strong>Matrix:</strong> <span id="metaMatrix">-</span></p>
+                <p><strong>Data bytes:</strong> <span id="metaBytes">-</span></p>
+                <p><strong>Mode:</strong> <span id="metaMode">-</span></p>
+            </div>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
