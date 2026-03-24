@@ -331,7 +331,8 @@ async function createOrUpdateIpBasedLink() {
 
   // Validate location rules
   if (ipRules.length === 0) {
-    throw new Error("Please add at least one country rule.");
+    console.warn("No IP rules added. Current rules:", ipRules);
+    throw new Error("❌ No country rules added yet. Select a country, enter a URL, and click 'Add'.");
   }
 
   const defaultUrl = normalizeUrl(ipDefaultUrl.value.trim());
@@ -425,26 +426,39 @@ function handleAddIpRule() {
   const countryCode = ipCountrySelect?.value;
   const url = ipCountryUrl?.value.trim();
 
+  console.log("AddIpRule clicked. Country:", countryCode, "URL:", url);
+
   if (!countryCode || !url) {
-    alert("Please select a country and enter a URL");
+    const msg = "Please select a country and enter a URL";
+    alert(msg);
+    console.warn(msg);
     return;
   }
 
   if (!/^https?:\/\//i.test(url)) {
-    alert("Please enter a valid URL (starting with http:// or https://)");
+    const msg = "Please enter a valid URL (starting with http:// or https://)";
+    alert(msg);
+    console.warn(msg);
     return;
   }
 
   // Check if country already exists
   if (ipRules.some(r => r.type === "country" && r.value === countryCode)) {
-    alert("This country is already configured");
+    const msg = "This country is already configured";
+    alert(msg);
+    console.warn(msg);
     return;
   }
 
   ipRules.push({ type: "country", value: countryCode, url });
+  console.log("✓ Rule added. Current rules:", ipRules);
+  
   ipCountrySelect.value = "";
   ipCountryUrl.value = "";
   renderIpRules();
+  
+  setStatus(`✓ Added rule: ${countryCode} → ${url}`);
+  console.log("✓ Rendered IP rules");
 }
 
 // Clear IP-based rules
@@ -1204,12 +1218,12 @@ staticContent?.addEventListener("keydown", (event) => {
 // ============ Firebase Auth State ============
 function initFirebaseAuthListener() {
   if (!window.firebaseServices || !window.firebaseServices.auth) {
-    console.warn("⚠️ Firebase not ready yet, retrying in 500ms...");
+    console.warn(" Firebase not ready yet, retrying in 500ms...");
     setTimeout(initFirebaseAuthListener, 500);
     return;
   }
 
-  console.log("✅ Setting up Firebase auth listener...");
+  console.log(" Setting up Firebase auth listener...");
   window.firebaseServices.auth.onAuthStateChanged((user) => {
     console.log("Auth state changed:", user ? user.email : "signed out");
     updateAuthUI(user);
@@ -1221,7 +1235,7 @@ if (window.firebaseServices && window.firebaseServices.auth) {
   initFirebaseAuthListener();
 } else {
   window.addEventListener("firebase-ready", () => {
-    console.log("🔥 Firebase ready event received");
+    console.log(" Firebase ready event received");
     initFirebaseAuthListener();
   });
 }
@@ -1236,3 +1250,7 @@ setStatus("Ready to generate QR codes.");
 clearMeta();
 setQRMode("static");
 updateDynamicLockStatus(); // Lock dynamic QR until user signs in
+
+// Initialize IP rules display
+renderIpRules();
+console.log("📝 IP rules initialized. Current rules:", ipRules);
