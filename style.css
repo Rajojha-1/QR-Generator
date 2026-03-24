@@ -1469,3 +1469,89 @@ textarea:focus {
     padding: 8px;
   }
 }
+
+@media (max-width: 460px) {
+  .app-container,
+  .free-qr-section {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .app-grid,
+  .generator-grid {
+    gap: 8px;
+  }
+
+  .generator-controls,
+  .generator-preview,
+  .app-sidebar {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .generator-controls h2 {
+    font-size: 1.08rem;
+    margin-bottom: 12px;
+  }
+
+  .form-section {
+    padding: 8px;
+    margin-bottom: 10px;
+  }
+
+  .type-label {
+    font-size: 0.8rem;
+    padding: 10px;
+  }
+
+  .type-badge {
+    font-size: 0.62rem;
+    padding: 3px 6px;
+  }
+
+  .checkbox-label {
+    font-size: 0.8rem;
+    gap: 6px;
+  }
+
+  #dynamicGroup .form-group {
+    margin-bottom: 10px;
+  }
+
+  #dynamicGroup label,
+  #dynamicGroup .checkbox-label {
+    overflow-wrap: anywhere;
+  }
+
+  #dynamicGroup .link-box {
+    padding: 8px;
+  }
+
+  #dynamicGroup .link-display {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  #dynamicGroup .link-display a {
+    font-size: 0.74rem;
+    padding: 7px 8px;
+    overflow-wrap: anywhere;
+  }
+
+  #dynamicGroup .btn,
+  .form-actions .btn,
+  .preview-actions .btn {
+    width: 100%;
+    min-width: 0;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="url"],
+  select,
+  textarea {
+    font-size: 0.86rem;
+    padding: 9px 10px;
+  }
+}
