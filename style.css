@@ -1143,11 +1143,6 @@ textarea:focus {
 }
 
 @media (max-width: 920px) {
-  html,
-  body {
-    overflow-x: hidden;
-  }
-
   .nav-container {
     position: relative;
   }
@@ -1303,6 +1298,31 @@ textarea:focus {
     margin-bottom: 12px;
   }
 
+  #dynamicGroup,
+  #dynamicGroup .form-row,
+  #dynamicGroup .form-group,
+  #dynamicGroup .checkbox-label,
+  #dynamicGroup .link-box,
+  #dynamicGroup .link-display {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  #dynamicGroup .checkbox-label {
+    margin-top: 0;
+    align-items: center;
+    width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  #dynamicGroup input,
+  #dynamicGroup select,
+  #dynamicGroup textarea,
+  #dynamicGroup button,
+  #dynamicGroup a {
+    max-width: 100%;
+  }
+
   input[type="text"],
   input[type="email"],
   input[type="password"],
@@ -1330,6 +1350,8 @@ textarea:focus {
   .type-label {
     min-width: 0;
     overflow-wrap: anywhere;
+    flex-wrap: wrap;
+    row-gap: 4px;
   }
 
   .link-display {
@@ -1433,5 +1455,17 @@ textarea:focus {
   .signal-pill {
     font-size: 0.66rem;
     padding: 5px 8px;
+  }
+
+  .generator-controls {
+    padding: 12px;
+  }
+
+  #dynamicGroup .form-row {
+    gap: 10px;
+  }
+
+  #dynamicGroup .link-box {
+    padding: 8px;
   }
 }
