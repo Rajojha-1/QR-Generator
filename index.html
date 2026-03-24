@@ -3,108 +3,489 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR generator</title>
+    <title>QR Code Generator | Free Static, Premium Dynamic</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
-
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js" defer></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-L688GS938F"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-L688GS938F');
+    </script>
 </head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-L688GS938F"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-L688GS938F');
-</script>
 <body>
-    <main class="page">
-        <section class="panel controls">
-            <h1>QR Generator</h1>
-            <p class="subtitle">Handles large payloads and auto-selects QR version from your text size.</p>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <path d="M7 7h2v2H7z"></path>
+                    <path d="M15 7h2v2h-2z"></path>
+                    <path d="M7 15h2v2H7z"></path>
+                    <path d="M11 11h2v2h-2z"></path>
+                </svg>
+                <span class="brand-text">QR Pro</span>
+            </div>
 
-            <label for="qrInput">Content</label>
-            <textarea id="qrInput" rows="7" placeholder="Paste text, URL, JSON, or other data..."></textarea>
+            <div class="nav-menu" id="navMenu">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#pricing" class="nav-link">Pricing</a>
+                <a href="#docs" class="nav-link">Docs</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
 
-            <div class="row">
-                <div class="field">
-                    <label for="contentType">Format</label>
-                    <select id="contentType">
-                        <option value="auto">Auto</option>
-                        <option value="text">Text</option>
-                        <option value="url">URL</option>
-                        <option value="email">Email</option>
-                        <option value="phone">Phone</option>
-                        <option value="sms">SMS</option>
-                        <option value="json">JSON</option>
-                    </select>
+            <div class="nav-auth" id="navAuth">
+                <button id="navSignInBtn" class="btn btn-secondary">Sign In</button>
+                <button id="navSignUpBtn" class="btn btn-primary">Sign Up</button>
+            </div>
+
+            <div class="nav-user hidden" id="navUserMenu">
+                <span id="navUserEmail" class="user-email"></span>
+                <button id="navSignOutBtn" class="btn btn-outline">Sign Out</button>
+            </div>
+
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Auth Modal -->
+    <div class="modal hidden" id="authModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-header">
+                <h2 id="authTitle">Sign In</h2>
+                <p id="authSubtitle">Access your QR codes</p>
+            </div>
+
+            <form class="auth-form" id="authForm">
+                <div class="form-group">
+                    <label for="authEmail">Email</label>
+                    <input id="authEmail" type="email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="authPassword">Password</label>
+                    <input id="authPassword" type="password" placeholder="Minimum 6 characters" required>
+                </div>
+                <button id="authSubmitBtn" type="button" class="btn btn-primary btn-block">Sign In</button>
+                <p id="authToggle" class="auth-toggle">Don't have an account? <a href="#">Sign up</a></p>
+                <p id="authMessage" class="auth-message" aria-live="polite"></p>
+            </form>
+
+            <div class="auth-divider">
+                <span>or continue with</span>
+            </div>
+
+            <div class="social-auth">
+                <button id="googleAuthBtn" type="button" class="btn btn-social google">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"></path>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"></path>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"></path>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"></path>
+                    </svg>
+                    Google
+                </button>
+                <button id="githubAuthBtn" type="button" class="btn btn-social github">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path>
+                    </svg>
+                    GitHub
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="signal-bar">
+        <div class="signal-bar-inner">
+            <span class="signal-pill">Enterprise SaaS Edition</span>
+            <p>Built for teams that need branded QR, campaign links, and measurable outcomes.</p>
+        </div>
+    </div>
+
+    <div id="features" class="anchor"></div>
+
+    <!-- Free QR Generator Section -->
+    <section class="free-qr-section" id="freeQRSection">
+        <div class="section-container">
+            <div class="free-qr-grid">
+                <div class="free-qr-controls">
+                    <h3>Free Static Generator</h3>
+                    <p class="controls-subtitle">No sign-up required. Build and export production-ready PNG QR assets.</p>
+                    <div class="form-group">
+                        <label for="freeContent">Content</label>
+                        <textarea id="freeContent" rows="6" placeholder="Enter text, URL, email, phone number..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="freeContentType">Format</label>
+                            <select id="freeContentType">
+                                <option value="auto">Auto-detect</option>
+                                <option value="text">Text</option>
+                                <option value="url">URL</option>
+                                <option value="email">Email</option>
+                                <option value="phone">Phone</option>
+                                <option value="sms">SMS</option>
+                                <option value="json">JSON</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="freeErrorLevel">Error Correction</label>
+                            <select id="freeErrorLevel">
+                                <option value="L">L (7%)</option>
+                                <option value="M" selected>M (15%)</option>
+                                <option value="Q">Q (25%)</option>
+                                <option value="H">H (30%)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="freeResolution">Resolution</label>
+                            <select id="freeResolution">
+                                <option value="256">144p</option>
+                                <option value="426">240p</option>
+                                <option value="640" selected>360p</option>
+                                <option value="854">480p</option>
+                                <option value="1280">720p</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="freeQuietZone">Quiet Zone</label>
+                            <input id="freeQuietZone" type="number" min="2" max="10" value="4">
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="freeGenerateBtn" class="btn btn-primary">Generate QR Code</button>
+                        <button id="freeClearBtn" class="btn btn-outline">Clear</button>
+                    </div>
                 </div>
 
-                <div class="field">
-                    <label for="errorLevel">Error correction</label>
-                    <select id="errorLevel">
-                        <option value="L">L (largest capacity)</option>
-                        <option value="M" selected>M (balanced)</option>
-                        <option value="Q">Q (safer scan)</option>
-                        <option value="H">H (strongest)</option>
-                    </select>
+                <div class="free-qr-preview">
+                    <h3>Live Output</h3>
+                    <div id="freeQRPreview" class="qr-preview-box">
+                        <canvas id="freeQRCanvas" width="300" height="300"></canvas>
+                    </div>
+                    <button id="freeDownloadBtn" class="btn btn-primary btn-block" disabled>Download QR Code</button>
+                    <p id="freeStatus" class="status-message"></p>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="field">
-                    <label for="canvasSize">Resolution</label>
-                    <select id="canvasSize">
-                        <option value="256">144p</option>
-                        <option value="426">240p</option>
-                        <option value="640" selected>360p</option>
-                        <option value="854">480p</option>
-                        <option value="1280">720p</option>
-                        <option value="1920">1080p</option>
-                        <option value="2560">1440p</option>
-                        <option value="3840">4K (2160p)</option>
-                        <option value="7680">8K (4320p)</option>
-                    </select>
+            <div id="pricing" class="anchor"></div>
+            <div class="upgrade-prompt">
+                <div class="upgrade-copy">
+                    <div class="eyebrow light">Pro Workspace</div>
+                    <h3>Activate Dynamic QR for your team</h3>
+                    <p>Enable editable destinations, campaign tags, and usage tracking across every channel.</p>
                 </div>
-                <div class="field">
-                    <label for="margin">Quiet zone (modules)</label>
-                    <input id="margin" type="number" min="2" max="10" step="1" value="4">
+                <div class="upgrade-actions">
+                    <button class="btn btn-primary" onclick="document.getElementById('navSignUpBtn').click()">Start Pro Trial</button>
+                    <button class="btn btn-outline" onclick="document.getElementById('navSignInBtn').click()">Open Workspace</button>
                 </div>
             </div>
 
-            <div class="row logo-row">
-                <div class="field">
-                    <label for="logoUpload">Logo image</label>
-                    <input id="logoUpload" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+
+        </div>
+    </section>
+
+    <!-- Main Application -->
+    <main class="app-container hidden" id="appContainer">
+        <div class="app-grid">
+            <!-- Sidebar -->
+            <aside class="app-sidebar">
+                <nav class="sidebar-nav">
+                    <button class="sidebar-item active" data-tab="generator">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 9.5c0 .83-.67 1.5-1.5 1.5S11 13.33 11 12.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5z"></path>
+                        </svg>
+                        Generator
+                    </button>
+                    <button class="sidebar-item" data-tab="library">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"></path>
+                        </svg>
+                        My QR Codes
+                    </button>
+                    <button class="sidebar-item" data-tab="analytics">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"></path>
+                        </svg>
+                        Analytics
+                    </button>
+                </nav>
+            </aside>
+
+            <!-- Content -->
+            <div class="app-content">
+                <!-- Generator Tab -->
+                <div class="tab-content active" id="tab-generator">
+                    <div class="generator-grid">
+                        <div class="generator-controls">
+                            <h2>Create QR Code</h2>
+
+                            <div class="form-group">
+                                <label>QR Type</label>
+                                <div class="type-selector">
+                                    <input type="radio" id="type-static" name="qrType" value="static" checked>
+                                    <label for="type-static" class="type-label">
+                                        <span class="type-badge free">FREE</span>
+                                        Static
+                                    </label>
+                                    <input type="radio" id="type-dynamic" name="qrType" value="dynamic">
+                                    <label for="type-dynamic" class="type-label">
+                                        <span class="type-badge pro">PRO</span>
+                                        Dynamic
+                                        <span id="dynamicLockIcon" class="lock-icon" title="Sign in required">🔒</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="staticGroup" class="form-section">
+                                <div class="form-group">
+                                    <label for="staticContent">Content</label>
+                                    <textarea id="staticContent" rows="6" placeholder="Paste text, URL, JSON..."></textarea>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="contentType">Format</label>
+                                        <select id="contentType">
+                                            <option value="auto">Auto</option>
+                                            <option value="text">Text</option>
+                                            <option value="url">URL</option>
+                                            <option value="email">Email</option>
+                                            <option value="phone">Phone</option>
+                                            <option value="sms">SMS</option>
+                                            <option value="json">JSON</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="errorLevel">Error Correction</label>
+                                        <select id="errorLevel">
+                                            <option value="L">L (7%)</option>
+                                            <option value="M" selected>M (15%)</option>
+                                            <option value="Q">Q (25%)</option>
+                                            <option value="H">H (30%)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="dynamicGroup" class="form-section hidden">
+                                <div class="form-group">
+                                    <label for="dynamicTarget">Redirect URL</label>
+                                    <input id="dynamicTarget" type="url" placeholder="https://example.com/page">
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="dynamicSlug">Custom Slug</label>
+                                        <input id="dynamicSlug" type="text" placeholder="my-campaign">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="checkbox-label">
+                                            <input id="dynamicUpdate" type="checkbox">
+                                            Update existing
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div id="dynamicLinkBox" class="link-box hidden">
+                                    <p>Your dynamic link:</p>
+                                    <div class="link-display">
+                                        <a id="dynamicLink" href="#" target="_blank" rel="noreferrer"></a>
+                                        <button class="btn btn-icon" id="copyLinkBtn" title="Copy link">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="resolution">Resolution</label>
+                                    <select id="resolution">
+                                        <option value="256">144p</option>
+                                        <option value="426">240p</option>
+                                        <option value="640" selected>360p</option>
+                                        <option value="854">480p</option>
+                                        <option value="1280">720p</option>
+                                        <option value="1920">1080p</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="quietZone">Quiet Zone</label>
+                                    <input id="quietZone" type="number" min="2" max="10" value="4">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="logoUpload">Add Logo (Optional)</label>
+                                <div class="file-upload">
+                                    <input id="logoUpload" type="file" accept="image/*">
+                                    <span>Choose image or drag here</span>
+                                </div>
+                                <div id="logoPreview" class="logo-preview hidden"></div>
+                                <button id="removeLogo" class="btn btn-outline btn-sm hidden">Remove Logo</button>
+                            </div>
+
+                            <div class="form-actions">
+                                <button id="generateBtn" class="btn btn-primary btn-lg">Generate QR</button>
+                                <button id="clearBtn" class="btn btn-outline">Clear</button>
+                            </div>
+
+                            <p id="statusMessage" class="status-message" aria-live="polite"></p>
+                        </div>
+
+                        <div class="generator-preview">
+                            <div class="preview-box">
+                                <h3>Preview</h3>
+                                <canvas id="qrCanvas" width="380" height="380"></canvas>
+                                <div class="preview-info">
+                                    <div class="info-item">
+                                        <span class="label">Version:</span>
+                                        <span id="metaVersion" class="value">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">Matrix:</span>
+                                        <span id="metaMatrix" class="value">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">Bytes:</span>
+                                        <span id="metaBytes" class="value">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="label">Mode:</span>
+                                        <span id="metaMode" class="value">-</span>
+                                    </div>
+                                </div>
+
+                                <div class="preview-actions">
+                                    <button id="downloadBtn" class="btn btn-primary" disabled>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        Download PNG
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="field logo-actions">
-                    <label class="checkline" for="logoToggle">
-                        <input id="logoToggle" type="checkbox" checked>
-                        Show logo
-                    </label>
-                    <button id="removeLogoBtn" type="button">Remove Logo</button>
+
+                <!-- Library Tab -->
+                <div class="tab-content" id="tab-library">
+                    <div class="library-section">
+                        <h2>My QR Codes</h2>
+                        <p class="text-muted">Saved assets, campaign groups, and brand templates appear here.</p>
+                    </div>
+                </div>
+
+                <!-- Analytics Tab -->
+                <div class="tab-content" id="tab-analytics">
+                    <div class="analytics-section">
+                        <h2>Analytics</h2>
+                        <p class="text-muted">Measure scans, channels, and campaign performance in one report stream.</p>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="actions">
-                <button id="generateBtn" class="primary">Generate</button>
-                <button id="clearBtn" type="button">Clear</button>
-                <button id="downloadBtn" type="button" disabled>Download PNG</button>
+        <div class="app-header">
+            <div class="app-header-content">
+                <div>
+                    <div class="eyebrow">Workspace</div>
+                    <h1>Campaign Command Center</h1>
+                    <p>Generate, manage, and optimize QR operations from one secure console.</p>
+                </div>
+                <div class="workspace-badges">
+                    <span class="badge">Role Controls</span>
+                    <span class="badge">Audit Trail</span>
+                    <span class="badge">Live Analytics</span>
+                </div>
             </div>
-
-            <p id="status" class="status" aria-live="polite"></p>
-        </section>
-
-        <section class="panel preview">
-            <canvas id="qrCanvas" width="420" height="420"></canvas>
-            <div class="meta">
-                <p><strong>Version:</strong> <span id="metaVersion">-</span></p>
-                <p><strong>Matrix:</strong> <span id="metaMatrix">-</span></p>
-                <p><strong>Data bytes:</strong> <span id="metaBytes">-</span></p>
-                <p><strong>Mode:</strong> <span id="metaMode">-</span></p>
-            </div>
-        </section>
+        </div>
     </main>
-    <script src="script.js"></script>
+
+    <div id="docs" class="anchor"></div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>QR Pro</h4>
+                <p>The simplest QR code generator for modern teams.</p>
+                <div class="social-links">
+                    <a href="#" title="Twitter">𝕏</a>
+                    <a href="#" title="GitHub">Git</a>
+                    <a href="#" title="LinkedIn">in</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h5>Product</h5>
+                <a href="#">Features</a>
+                <a href="#">Pricing</a>
+                <a href="#">API</a>
+                <a href="#">Status</a>
+            </div>
+
+            <div class="footer-section">
+                <h5>Resources</h5>
+                <a href="#">Documentation</a>
+                <a href="#">Blog</a>
+                <a href="#">Guides</a>
+                <a href="#">Community</a>
+            </div>
+
+            <div id="contact" class="anchor"></div>
+            <div class="footer-section">
+                <h5>Legal</h5>
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Security</a>
+                <a href="#">Contact</a>
+            </div>
+
+            <div class="footer-section newsletter">
+                <h5>Stay Updated</h5>
+                <p>Get the latest QR trends.</p>
+                <div class="newsletter-input">
+                    <input type="email" placeholder="Enter your email">
+                    <button class="btn btn-primary btn-sm">Subscribe</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 QR Pro. All rights reserved.</p>
+            <div class="footer-badges">
+                <span class="badge">SOC 2 Compliant</span>
+                <span class="badge">99.9% Uptime</span>
+                <span class="badge">GDPR Ready</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js" defer></script>
 </body>
 </html>
