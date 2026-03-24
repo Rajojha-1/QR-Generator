@@ -31,6 +31,8 @@ const navUserMenu = document.getElementById("navUserMenu");
 const navFeatures = document.getElementById("navFeatures");
 const hamburger = document.getElementById("hamburger");
 const navMenu = document.getElementById("navMenu");
+const navMobileLibrary = document.getElementById("navMobileLibrary");
+const navMobileAnalytics = document.getElementById("navMobileAnalytics");
 
 // Modal
 const authModal = document.getElementById("authModal");
@@ -558,7 +560,8 @@ function updateAuthUI(user) {
   if (user) {
     navAuth.classList.add("hidden");
     navUserMenu.classList.remove("hidden");
-    navFeatures.classList.remove("hidden");
+    navMobileLibrary?.classList.remove("hidden");
+    navMobileAnalytics?.classList.remove("hidden");
     navUserEmail.textContent = user.email;
     // Show app, hide free section
     appContainer.classList.remove("hidden");
@@ -571,7 +574,8 @@ function updateAuthUI(user) {
   } else {
     navAuth.classList.remove("hidden");
     navUserMenu.classList.add("hidden");
-    navFeatures.classList.add("hidden");
+    navMobileLibrary?.classList.add("hidden");
+    navMobileAnalytics?.classList.add("hidden");
     // Show free section, hide app
     appContainer.classList.add("hidden");
     if (freeQRSection) freeQRSection.classList.remove("hidden");
@@ -913,12 +917,19 @@ sidebarItems.forEach(item => {
   });
 });
 
-// Nav Features (My QR Codes, Analytics)
-navFeatures?.querySelectorAll(".nav-feature-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    switchTab(btn.dataset.tab);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
+// Nav Mobile Buttons (My QR Codes, Analytics) - Hamburger menu
+navMobileLibrary?.addEventListener("click", () => {
+  switchTab("library");
+  navMenu.classList.remove("mobile-open");
+  hamburger?.setAttribute("aria-expanded", "false");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+navMobileAnalytics?.addEventListener("click", () => {
+  switchTab("analytics");
+  navMenu.classList.remove("mobile-open");
+  hamburger?.setAttribute("aria-expanded", "false");
+  window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
 // Generator Type
