@@ -1400,19 +1400,26 @@ textarea:focus {
 
   .nav-user:not(.hidden) {
     display: flex !important;
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
   }
 
   .nav-user:not(.hidden) .user-email {
-    max-width: none;
-    width: 100%;
+    max-width: 120px;
+    padding: 5px 8px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .nav-user:not(.hidden) .btn {
-    width: 100%;
-    font-size: 0.8rem;
-    padding: 8px 12px;
+    font-size: 0.75rem;
+    padding: 6px 10px;
+    min-height: 34px;
+    white-space: nowrap;
   }
 
   .social-auth {
@@ -1459,6 +1466,22 @@ textarea:focus {
   .nav-menu {
     left: 10px;
     right: 10px;
+  }
+
+  .nav-user:not(.hidden) {
+    gap: 4px;
+  }
+
+  .nav-user:not(.hidden) .user-email {
+    max-width: 80px;
+    padding: 4px 6px;
+    font-size: 0.7rem;
+  }
+
+  .nav-user:not(.hidden) .btn {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    min-height: 30px;
   }
 
   .status-message {
