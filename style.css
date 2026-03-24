@@ -1143,6 +1143,11 @@ textarea:focus {
 }
 
 @media (max-width: 920px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
   .nav-container {
     position: relative;
   }
@@ -1191,6 +1196,29 @@ textarea:focus {
   .hero-stats,
   .upgrade-prompt {
     grid-template-columns: 1fr;
+  }
+
+  .signal-bar-inner {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .signal-pill {
+    flex: 0 0 auto;
+  }
+
+  .signal-bar p {
+    flex: 1 1 220px;
+    min-width: 0;
+  }
+
+  .upgrade-prompt {
+    padding: 18px;
+  }
+
+  .upgrade-copy,
+  .upgrade-actions {
+    min-width: 0;
   }
 
   .free-qr-grid,
@@ -1262,6 +1290,15 @@ textarea:focus {
     padding: 10px;
   }
 
+  .app-content,
+  .generator-controls,
+  .generator-preview,
+  .form-section,
+  .link-box,
+  .preview-box {
+    min-width: 0;
+  }
+
   .form-group {
     margin-bottom: 12px;
   }
@@ -1288,6 +1325,38 @@ textarea:focus {
   .generator-grid,
   .free-qr-grid {
     gap: 10px;
+  }
+
+  .type-label {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .link-display {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .link-display a {
+    width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .preview-actions,
+  .form-actions,
+  .upgrade-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .preview-actions .btn,
+  .form-actions .btn,
+  .upgrade-actions .btn {
+    width: 100%;
   }
 
   .my-qr-item {
