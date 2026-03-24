@@ -153,6 +153,38 @@ a:hover {
   border-color: #a0b7e0;
 }
 
+.nav-features {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-feature-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.nav-feature-btn:hover {
+  background: var(--surface-2);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.nav-feature-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
 .nav-auth,
 .nav-user {
   margin-left: auto;
@@ -1259,6 +1291,10 @@ textarea:focus {
     height: 66px;
   }
 
+  .nav-features {
+    display: none;
+  }
+
   .app-container {
     margin-top: 30px;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(255, 251, 255, 0.96));
@@ -1468,6 +1504,23 @@ textarea:focus {
     padding-right: 10px;
   }
 
+  .nav-features {
+    display: flex;
+    gap: 8px;
+    margin-left: 8px;
+  }
+
+  .nav-feature-btn {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    border-radius: 6px;
+  }
+
+  .nav-feature-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
   .app-container {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 251, 255, 0.98));
     border: 1px solid var(--line);
@@ -1638,6 +1691,17 @@ textarea:focus {
 }
 
 @media (max-width: 360px) {
+  .nav-feature-btn {
+    padding: 5px 8px;
+    font-size: 0.7rem;
+    border-radius: 5px;
+  }
+
+  .nav-feature-btn svg {
+    width: 15px;
+    height: 15px;
+  }
+
   .app-container {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 251, 255, 0.98));
     border: 1px solid var(--line);

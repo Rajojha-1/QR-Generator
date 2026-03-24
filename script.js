@@ -28,6 +28,7 @@ const navSignOutBtn = document.getElementById("navSignOutBtn");
 const navUserEmail = document.getElementById("navUserEmail");
 const navAuth = document.getElementById("navAuth");
 const navUserMenu = document.getElementById("navUserMenu");
+const navFeatures = document.getElementById("navFeatures");
 const hamburger = document.getElementById("hamburger");
 const navMenu = document.getElementById("navMenu");
 
@@ -557,6 +558,7 @@ function updateAuthUI(user) {
   if (user) {
     navAuth.classList.add("hidden");
     navUserMenu.classList.remove("hidden");
+    navFeatures.classList.remove("hidden");
     navUserEmail.textContent = user.email;
     // Show app, hide free section
     appContainer.classList.remove("hidden");
@@ -569,6 +571,7 @@ function updateAuthUI(user) {
   } else {
     navAuth.classList.remove("hidden");
     navUserMenu.classList.add("hidden");
+    navFeatures.classList.add("hidden");
     // Show free section, hide app
     appContainer.classList.add("hidden");
     if (freeQRSection) freeQRSection.classList.remove("hidden");
@@ -907,6 +910,14 @@ navMenu?.querySelectorAll("a").forEach((link) => {
 sidebarItems.forEach(item => {
   item.addEventListener("click", () => {
     switchTab(item.dataset.tab);
+  });
+});
+
+// Nav Features (My QR Codes, Analytics)
+navFeatures?.querySelectorAll(".nav-feature-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    switchTab(btn.dataset.tab);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   });
 });
 
