@@ -1261,6 +1261,11 @@ textarea:focus {
 
   .app-container {
     margin-top: 30px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(255, 251, 255, 0.96));
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+    padding: 14px 14px 24px;
   }
 
   .free-qr-section {
@@ -1463,6 +1468,56 @@ textarea:focus {
     padding-right: 10px;
   }
 
+  .app-container {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 251, 255, 0.98));
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    padding: 12px 12px 20px;
+    margin: 16px auto 0;
+  }
+
+  .app-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .app-sidebar {
+    display: none;
+  }
+
+  .sidebar-nav {
+    display: none;
+  }
+
+  .app-header {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(245, 249, 255, 0.95));
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .generator-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .generator-controls,
+  .generator-preview {
+    padding: 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .generator-controls h2 {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
   .nav-menu {
     left: 10px;
     right: 10px;
@@ -1484,32 +1539,6 @@ textarea:focus {
     min-height: 30px;
   }
 
-  .app-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .app-sidebar {
-    display: none;
-  }
-
-  .sidebar-nav {
-    display: none;
-  }
-
-  .generator-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .generator-controls,
-  .generator-preview {
-    padding: 10px;
-  }
-
-  .generator-controls h2 {
-    font-size: 1rem;
-    margin-bottom: 12px;
-  }
-
   .type-selector {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
@@ -1519,6 +1548,7 @@ textarea:focus {
     padding: 10px;
     font-size: 0.8rem;
     gap: 5px;
+    border-radius: 10px;
   }
 
   .type-badge {
@@ -1529,6 +1559,9 @@ textarea:focus {
   .form-section {
     padding: 10px;
     margin-bottom: 8px;
+    border-radius: 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
   }
 
   .form-group {
@@ -1547,6 +1580,15 @@ textarea:focus {
   textarea {
     font-size: 0.9rem;
     padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+
+  .btn {
+    border-radius: 10px;
+    font-size: 0.85rem;
+    padding: 8px 12px;
+    min-height: 36px;
   }
 
   .status-message {
@@ -1565,8 +1607,25 @@ textarea:focus {
     padding: 5px 8px;
   }
 
-  .generator-controls {
+  .preview-box {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
     padding: 12px;
+  }
+
+  .preview-box h3 {
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+  }
+
+  .preview-info {
+    background: var(--surface-2);
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid var(--line);
   }
 
   #dynamicGroup .form-row {
@@ -1579,9 +1638,27 @@ textarea:focus {
 }
 
 @media (max-width: 360px) {
+  .app-container {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 251, 255, 0.98));
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+    padding: 10px 10px 16px;
+    margin: 14px auto 0;
+  }
+
+  .app-header {
+    border-radius: 10px;
+    padding: 10px;
+  }
+
   .generator-controls,
   .generator-preview {
     padding: 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow-sm);
   }
 
   .generator-controls h2 {
@@ -1591,6 +1668,7 @@ textarea:focus {
   .type-label {
     padding: 8px;
     font-size: 0.75rem;
+    border-radius: 8px;
   }
 
   .type-badge {
@@ -1601,6 +1679,9 @@ textarea:focus {
   .form-section {
     padding: 8px;
     margin-bottom: 6px;
+    border-radius: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
   }
 
   .form-group {
@@ -1620,11 +1701,22 @@ textarea:focus {
   textarea {
     font-size: 0.85rem;
     padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
   }
 
   .btn {
     font-size: 0.75rem;
     padding: 6px 10px;
+    border-radius: 8px;
+  }
+
+  .preview-box {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow-sm);
+    padding: 8px;
   }
 
   .preview-box h3 {
@@ -1633,6 +1725,9 @@ textarea:focus {
 
   .preview-info {
     padding: 8px;
+    background: var(--surface-2);
+    border-radius: 8px;
+    border: 1px solid var(--line);
   }
 
   .info-item {
