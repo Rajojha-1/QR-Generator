@@ -53,16 +53,39 @@ module.exports = async function handler(req, res) {
 
   const body = parseBody(req);
   const slug = normalizeSlug(body.slug);
-  const targetUrl = normalizeUrl(body.targetUrl);
 
   if (!slug) {
     res.status(400).json({ error: "slug is required for update" });
     return;
   }
 
-  if (!targetUrl || !/^https?:\/\//i.test(targetUrl)) {
-    res.status(400).json({ error: "A valid targetUrl is required" });
-    return;
+  // Support both simple targetUrl and location-based rules
+  let locationRules = null;
+  let primaryTargetUrl = null;
+
+  if (body.locationRules && Array.isArray(body.locationRules) && body.locationRules.length > 0) {
+    // Validate location rules
+    locationRules = body.locationRules.map(rule => ({
+      type: rule.type, // "country" or "default"
+      value: rule.value, // country code or null for default
+      url: normalizeUrl(rule.url)
+    }));
+
+    // Ensure all URLs are valid
+    if (locationRules.some(r => !r.url || !/^https?:\/\//i.test(r.url))) {
+      res.status(400).json({ error: "All location rule URLs must be valid" });
+      return;
+    }
+
+    // Get default URL for response
+    primaryTargetUrl = (locationRules.find(r => r.type === "default")?.url) || locationRules[0]?.url || "";
+  } else {
+    const targetUrl = normalizeUrl(body.targetUrl);
+    if (!targetUrl || !/^https?:\/\//i.test(targetUrl)) {
+      res.status(400).json({ error: "A valid targetUrl or location rules are required" });
+      return;
+    }
+    primaryTargetUrl = targetUrl;
   }
 
   const key = `qr:${slug}`;
@@ -98,28 +121,39 @@ module.exports = async function handler(req, res) {
   const createdAt = existingData.createdAt || new Date().toISOString();
   const updatedAt = new Date().toISOString();
 
+  const payload = {
+    userId: user.uid,
+    createdAt,
+    updatedAt
+  };
+
+  // Save location rules if provided, otherwise use single targetUrl
+  if (locationRules) {
+    payload.locationRules = locationRules;
+  } else {
+    payload.targetUrl = primaryTargetUrl;
+  }
+
   try {
-    await setValue(
-      key,
-      JSON.stringify({
-        targetUrl,
-        userId: user.uid,
-        createdAt,
-        updatedAt
-      })
-    );
+    await setValue(key, JSON.stringify(payload));
 
     await upsertUserQr(user.uid, {
       slug,
-      targetUrl,
+      targetUrl: primaryTargetUrl,
       shortUrl,
       createdAt,
-      updatedAt
+      updatedAt,
+      isGeoTargeted: !!locationRules
     });
   } catch (error) {
     res.status(500).json({ error: error.message || "Failed to update dynamic link." });
     return;
   }
 
-  res.status(200).json({ slug, shortUrl, targetUrl });
+  res.status(200).json({ 
+    slug, 
+    shortUrl, 
+    targetUrl: primaryTargetUrl,
+    isGeoTargeted: !!locationRules
+  });
 };

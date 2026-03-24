@@ -1,5 +1,62 @@
 const { getValue } = require("../_lib/kv");
 
+// Get IP address from request
+function getClientIp(req) {
+  return (
+    req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
+    req.headers["x-real-ip"] ||
+    req.socket?.remoteAddress ||
+    "0.0.0.0"
+  );
+}
+
+// Get geolocation from IP using ip-api.com (free, no API key needed)
+async function getGeolocation(ip) {
+  try {
+    const response = await fetch(`http://ip-api.com/json/${ip}?fields=country,countryCode,region,regionName`);
+    if (!response.ok) return null;
+    const data = await response.json();
+    return {
+      country: data.country,
+      countryCode: data.countryCode?.toUpperCase(),
+      region: data.region,
+      regionName: data.regionName
+    };
+  } catch (error) {
+    console.error("Geolocation lookup failed:", error.message);
+    return null;
+  }
+}
+
+// Find the best matching redirect URL based on location
+function getRedirectUrl(payload, geolocation) {
+  // If simple targetUrl (backward compatibility)
+  if (payload.targetUrl && !payload.locationRules) {
+    return payload.targetUrl;
+  }
+
+  // If location-based rules exist
+  if (payload.locationRules && Array.isArray(payload.locationRules)) {
+    if (geolocation) {
+      // Try to match by country code
+      for (const rule of payload.locationRules) {
+        if (rule.type === "country" && rule.value?.toUpperCase() === geolocation.countryCode) {
+          return rule.url;
+        }
+      }
+    }
+    
+    // Fallback to default URL
+    const defaultRule = payload.locationRules.find(r => r.type === "default");
+    if (defaultRule) {
+      return defaultRule.url;
+    }
+  }
+
+  // Last resort: use targetUrl if available
+  return payload.targetUrl;
+}
+
 module.exports = async function handler(req, res) {
   const slug = String(req.query.slug || "")
     .trim()
@@ -33,9 +90,15 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  const targetUrl = String(payload.targetUrl || "").trim();
-  if (!/^https?:\/\//i.test(targetUrl)) {
-    res.status(500).send("Target URL is invalid");
+  // Get IP and geolocation
+  const clientIp = getClientIp(req);
+  const geolocation = await getGeolocation(clientIp);
+
+  // Determine which URL to redirect to
+  const targetUrl = getRedirectUrl(payload, geolocation);
+
+  if (!targetUrl || !/^https?:\/\//i.test(targetUrl)) {
+    res.status(500).send("Target URL is invalid or not configured");
     return;
   }
 

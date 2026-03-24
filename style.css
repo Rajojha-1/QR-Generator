@@ -979,6 +979,88 @@ textarea:focus {
   word-break: break-all;
 }
 
+/* Geolocation Targeting */
+.geo-targeting-panel {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.form-hint {
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  margin-bottom: 10px;
+}
+
+.geo-rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.geo-rule-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.geo-rule-flag {
+  min-width: 30px;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.geo-rule-country {
+  min-width: 60px;
+  font-weight: 600;
+}
+
+.geo-rule-url {
+  flex: 1;
+  color: var(--brand);
+  word-break: break-all;
+  font-size: 0.75rem;
+}
+
+.geo-rule-remove {
+  background: none;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background var(--transition);
+}
+
+.geo-rule-remove:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.geo-add-rule {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.geo-add-rule select,
+.geo-add-rule input {
+  flex: 1;
+  min-width: 0;
+}
+
+.geo-add-rule select {
+  flex: 0 0 auto;
+  min-width: 150px;
+}
+
 .library-section,
 .analytics-section {
   min-height: 220px;
@@ -1700,6 +1782,29 @@ textarea:focus {
 
   #dynamicGroup .link-box {
     padding: 8px;
+  }
+
+  .geo-add-rule {
+    flex-direction: column;
+  }
+
+  .geo-add-rule select {
+    min-width: auto;
+  }
+
+  .geo-rule-item {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .geo-rule-url {
+    flex: 1 1 100%;
+    order: 4;
+  }
+
+  .geo-rule-remove {
+    order: 5;
+    margin-left: auto;
   }
 }
 

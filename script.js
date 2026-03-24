@@ -58,8 +58,10 @@ const tabContents = document.querySelectorAll(".tab-content");
 // Generator Controls
 const typeStatic = document.getElementById("type-static");
 const typeDynamic = document.getElementById("type-dynamic");
+const typeIpbased = document.getElementById("type-ipbased");
 const staticGroup = document.getElementById("staticGroup");
 const dynamicGroup = document.getElementById("dynamicGroup");
+const ipbasedGroup = document.getElementById("ipbasedGroup");
 
 const staticContent = document.getElementById("staticContent");
 const contentType = document.getElementById("contentType");
@@ -73,6 +75,19 @@ const dynamicUpdate = document.getElementById("dynamicUpdate");
 const dynamicLinkBox = document.getElementById("dynamicLinkBox");
 const dynamicLink = document.getElementById("dynamicLink");
 const copyLinkBtn = document.getElementById("copyLinkBtn");
+
+// IP-Based targeting (geolocation)
+const ipRulesList = document.getElementById("ipRulesList");
+const ipCountrySelect = document.getElementById("ipCountrySelect");
+const ipCountryUrl = document.getElementById("ipCountryUrl");
+const addIpRule = document.getElementById("addIpRule");
+const ipDefaultUrl = document.getElementById("ipDefaultUrl");
+const ipSlug = document.getElementById("ipSlug");
+const ipUpdate = document.getElementById("ipUpdate");
+const ipLinkBox = document.getElementById("ipLinkBox");
+const ipLink = document.getElementById("ipLink");
+const copyIpLinkBtn = document.getElementById("copyIpLinkBtn");
+
 const myQrList = document.getElementById("myQrList");
 const libraryStatus = document.getElementById("libraryStatus");
 const libraryEmptyState = document.getElementById("libraryEmptyState");
@@ -101,6 +116,7 @@ let isSignUpMode = false;
 let lastGenerated = null;
 let lastRenderState = null;
 let logoImage = null;
+let ipRules = []; // Array for IP-based geo-targeting: {type: "country", value: "US", url: "..."}  or  {type: "default", value: null, url: "..."}
 
 function utf8ByteLength(value) {
   return new TextEncoder().encode(value).length;
@@ -185,14 +201,25 @@ function clearMeta() {
 }
 
 function setQRMode(mode) {
+  const isStatic = mode === "static";
   const isDynamic = mode === "dynamic";
-  staticGroup.classList.toggle("hidden", isDynamic);
+  const isIpbased = mode === "ipbased";
+
+  staticGroup.classList.toggle("hidden", !isStatic);
   dynamicGroup.classList.toggle("hidden", !isDynamic);
-  staticContent.disabled = isDynamic;
-  contentType.disabled = isDynamic;
-  generateBtn.textContent = isDynamic ? "Generate Dynamic" : "Generate QR";
-  if (!isDynamic) {
+  ipbasedGroup.classList.toggle("hidden", !isIpbased);
+
+  staticContent.disabled = !isStatic;
+  contentType.disabled = !isStatic;
+
+  if (isStatic) {
+    generateBtn.textContent = "Generate QR";
+  } else if (isDynamic) {
+    generateBtn.textContent = "Generate Dynamic";
     dynamicLinkBox.classList.add("hidden");
+  } else if (isIpbased) {
+    generateBtn.textContent = "Generate IP-Based";
+    ipLinkBox.classList.add("hidden");
   }
 }
 
@@ -297,6 +324,138 @@ async function createOrUpdateDynamicLink() {
   return shortUrl;
 }
 
+async function createOrUpdateIpBasedLink() {
+  if (!currentUser) {
+    throw new Error("Sign in required for IP-based QR codes.");
+  }
+
+  // Validate location rules
+  if (ipRules.length === 0) {
+    throw new Error("Please add at least one country rule.");
+  }
+
+  const defaultUrl = normalizeUrl(ipDefaultUrl.value.trim());
+  if (!defaultUrl) {
+    throw new Error("Please set a default URL for other countries.");
+  }
+
+  // Create rules array with default
+  const locationRules = [
+    ...ipRules.map(rule => ({
+      type: rule.type,
+      value: rule.value,
+      url: rule.url
+    })),
+    { type: "default", value: null, url: defaultUrl }
+  ];
+
+  const slug = ipSlug.value.trim();
+  const shouldUpdate = ipUpdate.checked;
+  const endpoint = shouldUpdate ? "/api/dynamic/update" : "/api/dynamic/create";
+
+  // Get Firebase ID token
+  const idToken = await currentUser.getIdToken();
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${idToken}`
+    },
+    body: JSON.stringify({ locationRules, slug })
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.error || "IP-based API failed.");
+  }
+
+  const shortUrl = data.shortUrl || `${window.location.origin}/r/${data.slug}`;
+  ipLink.textContent = shortUrl;
+  ipLink.href = shortUrl;
+  ipLinkBox.classList.remove("hidden");
+
+  return shortUrl;
+}
+
+// Render geolocation rules list
+function renderIpRules() {
+  if (!ipRulesList) return;
+
+  if (ipRules.length === 0) {
+    ipRulesList.innerHTML = "<p style='font-size:0.8rem;color:var(--ink-muted);'>No country rules added yet.</p>";
+    return;
+  }
+
+  ipRulesList.innerHTML = ipRules.map((rule, idx) => {
+    const countryName = rule.type === "default" ? "Default" : rule.value;
+    const countryFlag = getCountryFlag(rule.value);
+    return `
+      <div class="geo-rule-item">
+        <span class="geo-rule-flag">${countryFlag}</span>
+        <span class="geo-rule-country">${countryName}</span>
+        <span class="geo-rule-url">${rule.url}</span>
+        <button class="geo-rule-remove" data-index="${idx}" title="Remove">✕</button>
+      </div>
+    `;
+  }).join("");
+
+  // Add event listeners to remove buttons
+  ipRulesList.querySelectorAll(".geo-rule-remove").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.index);
+      ipRules.splice(idx, 1);
+      renderIpRules();
+    });
+  });
+}
+
+// Get country flag emoji
+function getCountryFlag(countryCode) {
+  const flags = {
+    US: "🇺🇸", IN: "🇮🇳", GB: "🇬🇧", DE: "🇩🇪", FR: "🇫🇷", 
+    CA: "🇨🇦", AU: "🇦🇺", JP: "🇯🇵", SG: "🇸🇬", BR: "🇧🇷",
+    MX: "🇲🇽", NL: "🇳🇱", ZA: "🇿🇦"
+  };
+  return flags[countryCode] || "🌍";
+}
+
+// Add IP-based rule
+function addIpRule() {
+  const countryCode = ipCountrySelect?.value;
+  const url = ipCountryUrl?.value.trim();
+
+  if (!countryCode || !url) {
+    alert("Please select a country and enter a URL");
+    return;
+  }
+
+  if (!/^https?:\/\//i.test(url)) {
+    alert("Please enter a valid URL (starting with http:// or https://)");
+    return;
+  }
+
+  // Check if country already exists
+  if (ipRules.some(r => r.type === "country" && r.value === countryCode)) {
+    alert("This country is already configured");
+    return;
+  }
+
+  ipRules.push({ type: "country", value: countryCode, url });
+  ipCountrySelect.value = "";
+  ipCountryUrl.value = "";
+  renderIpRules();
+}
+
+// Clear IP-based rules
+function clearIpRules() {
+  ipRules = [];
+  ipDefaultUrl.value = "";
+  ipCountryUrl.value = "";
+  ipCountrySelect.value = "";
+  renderIpRules();
+}
+
 function setLibraryStatus(message, isError = false) {
   if (!libraryStatus) return;
   if (!message) {
@@ -395,7 +554,7 @@ async function fetchMyQRCodes() {
 }
 
 async function generateQR() {
-  const mode = typeStatic.checked ? "static" : "dynamic";
+  const mode = typeStatic.checked ? "static" : typeIpbased.checked ? "ipbased" : "dynamic";
   const rawText = staticContent.value;
   const type = contentType.value;
   const errorLvl = errorLevel.value;
@@ -405,17 +564,23 @@ async function generateQR() {
   let payload = "";
   let modeDisplay = "";
 
-  if (mode === "dynamic") {
+  if (mode === "dynamic" || mode === "ipbased") {
     if (!currentUser) {
-      setStatus("👉 Sign in required for dynamic QR codes. Click 'Sign In' at the top right.", true);
+      const msg = mode === "dynamic" ? "dynamic QR codes" : "IP-based QR codes";
+      setStatus(`👉 Sign in required for ${msg}. Click 'Sign In' at the top right.`, true);
       showAuthModal(false); // Show sign-in modal automatically
       clearMeta();
       downloadBtn.disabled = true;
       return;
     }
     try {
-      payload = await createOrUpdateDynamicLink();
-      modeDisplay = "Dynamic URL";
+      if (mode === "dynamic") {
+        payload = await createOrUpdateDynamicLink();
+        modeDisplay = "Dynamic URL";
+      } else {
+        payload = await createOrUpdateIpBasedLink();
+        modeDisplay = "IP-Based (Geo-targeting)";
+      }
       fetchMyQRCodes();
     } catch (error) {
       setStatus(error.message, true);
@@ -461,6 +626,8 @@ async function generateQR() {
     setStatus(
       mode === "dynamic"
         ? `Dynamic QR generated. Auto-selected version: v${version}.`
+        : mode === "ipbased"
+        ? `IP-based QR generated. Auto-selected version: v${version}.`
         : `Generated successfully. Auto-selected version: v${version}.`
     );
   } catch (error) {
@@ -479,6 +646,11 @@ function clearAll() {
   dynamicSlug.value = "";
   dynamicUpdate.checked = false;
   dynamicLinkBox.classList.add("hidden");
+  
+  // Clear IP-based targeting
+  clearIpRules();
+  ipLinkBox.classList.add("hidden");
+  
   clearMeta();
   setStatus("Cleared.");
   lastGenerated = null;
@@ -590,30 +762,53 @@ function updateAuthUI(user) {
 
 function updateDynamicLockStatus() {
   const dynamicLabel = document.querySelector("label[for='type-dynamic']");
-  const lockIcon = document.getElementById("dynamicLockIcon");
-  if (!dynamicLabel) return;
+  const dynamicLockIcon = document.getElementById("dynamicLockIcon");
+  const ipbasedLabel = document.querySelector("label[for='type-ipbased']");
+  const ipbasedLockIcon = document.getElementById("ipbasedLockIcon");
   
   if (currentUser) {
-    // User is logged in, enable dynamic QR
+    // User is logged in, enable dynamic and IP-based QR
     typeDynamic.disabled = false;
-    dynamicLabel.classList.remove("locked");
-    dynamicLabel.title = "";
-    dynamicLabel.style.pointerEvents = "auto";
-    dynamicLabel.style.opacity = "1";
-    if (lockIcon) lockIcon.style.display = "none";
-    console.log("✓ Dynamic QR unlocked for user:", currentUser.email);
-  } else {
-    // User is logged out, disable dynamic QR
-    typeDynamic.disabled = true;
-    dynamicLabel.classList.add("locked");
-    dynamicLabel.title = "Sign in required for dynamic QR codes";
-    dynamicLabel.style.pointerEvents = "none";
-    dynamicLabel.style.opacity = "0.5";
-    if (lockIcon) lockIcon.style.display = "inline";
-    console.log("🔒 Dynamic QR locked - sign in required");
+    if (dynamicLabel) {
+      dynamicLabel.classList.remove("locked");
+      dynamicLabel.title = "";
+      dynamicLabel.style.pointerEvents = "auto";
+      dynamicLabel.style.opacity = "1";
+    }
+    if (dynamicLockIcon) dynamicLockIcon.style.display = "none";
     
-    // If dynamic is selected, switch back to static
-    if (typeDynamic.checked) {
+    typeIpbased.disabled = false;
+    if (ipbasedLabel) {
+      ipbasedLabel.classList.remove("locked");
+      ipbasedLabel.title = "";
+      ipbasedLabel.style.pointerEvents = "auto";
+      ipbasedLabel.style.opacity = "1";
+    }
+    if (ipbasedLockIcon) ipbasedLockIcon.style.display = "none";
+    console.log("✓ Dynamic & IP-based QR unlocked for user:", currentUser.email);
+  } else {
+    // User is logged out, disable dynamic and IP-based QR
+    typeDynamic.disabled = true;
+    if (dynamicLabel) {
+      dynamicLabel.classList.add("locked");
+      dynamicLabel.title = "Sign in required for dynamic QR codes";
+      dynamicLabel.style.pointerEvents = "none";
+      dynamicLabel.style.opacity = "0.5";
+    }
+    if (dynamicLockIcon) dynamicLockIcon.style.display = "inline";
+    
+    typeIpbased.disabled = true;
+    if (ipbasedLabel) {
+      ipbasedLabel.classList.add("locked");
+      ipbasedLabel.title = "Sign in required for IP-based QR codes";
+      ipbasedLabel.style.pointerEvents = "none";
+      ipbasedLabel.style.opacity = "0.5";
+    }
+    if (ipbasedLockIcon) ipbasedLockIcon.style.display = "inline";
+    console.log("🔒 Dynamic & IP-based QR locked - sign in required");
+    
+    // If dynamic or ipbased is selected, switch back to static
+    if (typeDynamic.checked || typeIpbased.checked) {
       typeStatic.checked = true;
       setQRMode("static");
     }
@@ -935,6 +1130,23 @@ navMobileAnalytics?.addEventListener("click", () => {
 // Generator Type
 typeStatic?.addEventListener("change", () => setQRMode("static"));
 typeDynamic?.addEventListener("change", () => setQRMode("dynamic"));
+typeIpbased?.addEventListener("change", () => setQRMode("ipbased"));
+
+// IP-Based Targeting
+addIpRule?.addEventListener("click", addIpRule);
+
+ipCountryUrl?.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    addIpRule();
+  }
+});
+
+copyIpLinkBtn?.addEventListener("click", () => {
+  if (ipLink.href) {
+    navigator.clipboard.writeText(ipLink.href);
+    setStatus("Link copied to clipboard!");
+  }
+});
 
 // Generate & Controls
 generateBtn?.addEventListener("click", generateQR);

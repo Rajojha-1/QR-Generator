@@ -264,6 +264,12 @@
                                         Dynamic
                                         <span id="dynamicLockIcon" class="lock-icon" title="Sign in required">🔒</span>
                                     </label>
+                                    <input type="radio" id="type-ipbased" name="qrType" value="ipbased">
+                                    <label for="type-ipbased" class="type-label">
+                                        <span class="type-badge pro">PRO</span>
+                                        IP-Based
+                                        <span id="ipbasedLockIcon" class="lock-icon" title="Sign in required">🔒</span>
+                                    </label>
                                 </div>
                             </div>
 
@@ -322,6 +328,69 @@
                                     <div class="link-display">
                                         <a id="dynamicLink" href="#" target="_blank" rel="noreferrer"></a>
                                         <button class="btn btn-icon" id="copyLinkBtn" title="Copy link">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- IP-Based QR (Geolocation Targeting) -->
+                            <div id="ipbasedGroup" class="form-section hidden">
+                                <div class="form-group">
+                                    <label>Geolocation Targeting</label>
+                                    <p class="form-hint">Redirect users to different URLs based on their country</p>
+                                    
+                                    <div id="ipRulesList" class="geo-rules-list"></div>
+                                    
+                                    <label for="ipCountrySelect" style="margin-top: 12px;">Add Country Rule</label>
+                                    <div class="geo-add-rule">
+                                        <select id="ipCountrySelect">
+                                            <option value="">Select a country...</option>
+                                            <option value="US">🇺🇸 United States</option>
+                                            <option value="IN">🇮🇳 India</option>
+                                            <option value="GB">🇬🇧 United Kingdom</option>
+                                            <option value="DE">🇩🇪 Germany</option>
+                                            <option value="FR">🇫🇷 France</option>
+                                            <option value="CA">🇨🇦 Canada</option>
+                                            <option value="AU">🇦🇺 Australia</option>
+                                            <option value="JP">🇯🇵 Japan</option>
+                                            <option value="SG">🇸🇬 Singapore</option>
+                                            <option value="BR">🇧🇷 Brazil</option>
+                                            <option value="MX">🇲🇽 Mexico</option>
+                                            <option value="NL">🇳🇱 Netherlands</option>
+                                            <option value="ZA">🇿🇦 South Africa</option>
+                                        </select>
+                                        <input id="ipCountryUrl" type="url" placeholder="https://example.com/country-page">
+                                        <button id="addIpRule" class="btn btn-secondary btn-sm">Add</button>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="ipDefaultUrl">Default URL (Other Countries / Blocked)</label>
+                                    <input id="ipDefaultUrl" type="url" placeholder="https://example.com/default">
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="ipSlug">Custom Slug</label>
+                                        <input id="ipSlug" type="text" placeholder="my-geo-campaign">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="checkbox-label">
+                                            <input id="ipUpdate" type="checkbox">
+                                            Update existing
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div id="ipLinkBox" class="link-box hidden">
+                                    <p>Your IP-based link:</p>
+                                    <div class="link-display">
+                                        <a id="ipLink" href="#" target="_blank" rel="noreferrer"></a>
+                                        <button class="btn btn-icon" id="copyIpLinkBtn" title="Copy link">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                 <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
                                                 <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
