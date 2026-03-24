@@ -421,7 +421,7 @@ function getCountryFlag(countryCode) {
 }
 
 // Add IP-based rule
-function addIpRule() {
+function handleAddIpRule() {
   const countryCode = ipCountrySelect?.value;
   const url = ipCountryUrl?.value.trim();
 
@@ -1079,7 +1079,7 @@ function freeDownloadQR() {
 navSignInBtn?.addEventListener("click", () => showAuthModal(false));
 navSignUpBtn?.addEventListener("click", () => showAuthModal(true));
 navSignOutBtn?.addEventListener("click", async () => {
-  await firebaseServices.auth.signOut();
+  await window.firebaseServices?.auth.signOut();
 });
 modalClose?.addEventListener("click", closeAuthModal);
 authToggle?.addEventListener("click", (e) => {
@@ -1133,11 +1133,11 @@ typeDynamic?.addEventListener("change", () => setQRMode("dynamic"));
 typeIpbased?.addEventListener("change", () => setQRMode("ipbased"));
 
 // IP-Based Targeting
-addIpRule?.addEventListener("click", addIpRule);
+addIpRule?.addEventListener("click", handleAddIpRule);
 
 ipCountryUrl?.addEventListener("keypress", (e) => {
   if (e.key === "Enter") {
-    addIpRule();
+    handleAddIpRule();
   }
 });
 

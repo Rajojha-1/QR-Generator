@@ -584,6 +584,7 @@ textarea:focus {
 }
 
 .modal-content {
+  position: relative;
   width: min(95vw, 460px);
   background: #fff;
   border-radius: var(--r-md);
