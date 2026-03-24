@@ -1151,8 +1151,8 @@ textarea:focus {
     display: none;
     position: absolute;
     top: calc(100% + 10px);
-    left: 0;
-    right: 0;
+    left: 14px;
+    right: 14px;
     margin-left: 0;
     padding: 12px;
     border-radius: 12px;
@@ -1162,6 +1162,8 @@ textarea:focus {
     flex-direction: column;
     gap: 8px;
     z-index: 1200;
+    max-height: min(70vh, 360px);
+    overflow-y: auto;
   }
 
   .nav-menu.mobile-open {
@@ -1191,9 +1193,27 @@ textarea:focus {
     grid-template-columns: 1fr;
   }
 
+  .free-qr-grid,
+  .app-grid,
+  .generator-grid {
+    gap: 12px;
+  }
+
   .app-header-content {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .sidebar-nav {
+    gap: 8px;
+    padding-bottom: 4px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .sidebar-item {
+    min-height: 42px;
+    white-space: nowrap;
+    scroll-snap-align: start;
   }
 
   .footer-content {
@@ -1220,6 +1240,65 @@ textarea:focus {
     margin-top: 30px;
   }
 
+  .free-qr-section {
+    padding-top: 22px;
+    padding-bottom: 42px;
+  }
+
+  .free-qr-controls,
+  .free-qr-preview,
+  .generator-controls,
+  .generator-preview,
+  .library-section,
+  .analytics-section,
+  .app-header {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .form-section,
+  .link-box,
+  .preview-info {
+    padding: 10px;
+  }
+
+  .form-group {
+    margin-bottom: 12px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="url"],
+  select,
+  textarea {
+    padding: 10px 11px;
+    font-size: 0.9rem;
+  }
+
+  .btn {
+    min-height: 42px;
+  }
+
+  .btn-sm {
+    min-height: 34px;
+  }
+
+  .app-grid,
+  .generator-grid,
+  .free-qr-grid {
+    gap: 10px;
+  }
+
+  .my-qr-item {
+    padding: 10px;
+  }
+
+  .my-qr-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
   .nav-auth,
   .nav-user {
     display: none;
@@ -1239,5 +1318,51 @@ textarea:focus {
 
   .footer-content {
     grid-template-columns: 1fr;
+  }
+
+  .footer {
+    margin-top: 36px;
+  }
+
+  .footer-content {
+    padding-top: 30px;
+  }
+
+  .footer-bottom {
+    padding-top: 14px;
+    padding-bottom: 22px;
+  }
+}
+
+@media (max-width: 420px) {
+  .nav-container,
+  .signal-bar,
+  .app-container,
+  .free-qr-section,
+  .footer-content,
+  .footer-bottom {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .nav-menu {
+    left: 10px;
+    right: 10px;
+  }
+
+  .status-message {
+    font-size: 0.8rem;
+    min-height: 34px;
+    padding: 8px;
+  }
+
+  .signal-bar-inner {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .signal-pill {
+    font-size: 0.66rem;
+    padding: 5px 8px;
   }
 }
