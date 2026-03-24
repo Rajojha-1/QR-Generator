@@ -70,6 +70,9 @@ const dynamicUpdate = document.getElementById("dynamicUpdate");
 const dynamicLinkBox = document.getElementById("dynamicLinkBox");
 const dynamicLink = document.getElementById("dynamicLink");
 const copyLinkBtn = document.getElementById("copyLinkBtn");
+const myQrList = document.getElementById("myQrList");
+const libraryStatus = document.getElementById("libraryStatus");
+const libraryEmptyState = document.getElementById("libraryEmptyState");
 
 const logoUpload = document.getElementById("logoUpload");
 const removeLogo = document.getElementById("removeLogo");
@@ -230,7 +233,7 @@ function renderToCanvas(qrCode, quietZoneModules, requestedSize) {
 }
 
 function drawLogoOverlay(targetSize) {
-  if (!logoImage || !logoToggleEl.checked) {
+  if (!logoImage) {
     return;
   }
 
@@ -291,6 +294,103 @@ async function createOrUpdateDynamicLink() {
   return shortUrl;
 }
 
+function setLibraryStatus(message, isError = false) {
+  if (!libraryStatus) return;
+  if (!message) {
+    libraryStatus.textContent = "";
+    libraryStatus.classList.remove("show", "error", "success");
+    return;
+  }
+  libraryStatus.textContent = message;
+  libraryStatus.classList.add("show");
+  libraryStatus.classList.toggle("error", isError);
+  libraryStatus.classList.toggle("success", !isError);
+}
+
+function formatDate(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleString();
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function renderMyQRCodes(items) {
+  if (!myQrList || !libraryEmptyState) return;
+
+  if (!Array.isArray(items) || items.length === 0) {
+    myQrList.innerHTML = "";
+    libraryEmptyState.classList.remove("hidden");
+    return;
+  }
+
+  libraryEmptyState.classList.add("hidden");
+  myQrList.innerHTML = items
+    .map((item) => {
+      const shortUrl = item.shortUrl || `${window.location.origin}/r/${item.slug}`;
+      const targetUrl = item.targetUrl || "";
+      const updated = formatDate(item.updatedAt);
+      const safeSlug = escapeHtml(item.slug);
+      const safeShortUrl = escapeHtml(shortUrl);
+      const safeTargetUrl = escapeHtml(targetUrl);
+      const shortEncoded = encodeURIComponent(shortUrl);
+      const targetEncoded = encodeURIComponent(targetUrl);
+      return `
+        <article class="my-qr-item">
+          <div class="my-qr-top">
+            <span class="my-qr-slug">/${safeSlug}</span>
+            <span class="my-qr-date">${updated ? `Updated ${escapeHtml(updated)}` : ""}</span>
+          </div>
+          <a class="my-qr-link" href="${safeShortUrl}" target="_blank" rel="noreferrer">${safeShortUrl}</a>
+          <a class="my-qr-target" href="${safeTargetUrl}" target="_blank" rel="noreferrer">${safeTargetUrl}</a>
+          <div class="my-qr-actions">
+            <button class="btn btn-secondary btn-sm" data-copy-short="${shortEncoded}">Copy short link</button>
+            <button class="btn btn-outline btn-sm" data-fill-slug="${safeSlug}" data-fill-target="${targetEncoded}">Edit in Generator</button>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+async function fetchMyQRCodes() {
+  if (!currentUser) {
+    renderMyQRCodes([]);
+    return;
+  }
+
+  setLibraryStatus("Loading your dynamic QR codes...");
+
+  try {
+    const idToken = await currentUser.getIdToken();
+    const response = await fetch("/api/dynamic/list", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${idToken}`
+      }
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to load your QR codes.");
+    }
+
+    renderMyQRCodes(data.items || []);
+    setLibraryStatus("");
+  } catch (error) {
+    renderMyQRCodes([]);
+    setLibraryStatus(error.message || "Failed to load your QR codes.", true);
+  }
+}
+
 async function generateQR() {
   const mode = typeStatic.checked ? "static" : "dynamic";
   const rawText = staticContent.value;
@@ -313,6 +413,7 @@ async function generateQR() {
     try {
       payload = await createOrUpdateDynamicLink();
       modeDisplay = "Dynamic URL";
+      fetchMyQRCodes();
     } catch (error) {
       setStatus(error.message, true);
       clearMeta();
@@ -464,6 +565,7 @@ function updateAuthUI(user) {
     // Close modal immediately and scroll to app
     closeAuthModal();
     setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
+    fetchMyQRCodes();
   } else {
     navAuth.classList.remove("hidden");
     navUserMenu.classList.add("hidden");
@@ -471,6 +573,8 @@ function updateAuthUI(user) {
     appContainer.classList.add("hidden");
     if (freeQRSection) freeQRSection.classList.remove("hidden");
     console.log("❌ User signed out");
+    renderMyQRCodes([]);
+    setLibraryStatus("");
   }
   
   // Update dynamic option availability
@@ -649,6 +753,10 @@ function switchTab(tabName) {
   tabContents.forEach(content => {
     content.classList.toggle("active", content.id === `tab-${tabName}`);
   });
+
+  if (tabName === "library" && currentUser) {
+    fetchMyQRCodes();
+  }
 }
 
 // ============ Free QR Generator ============
@@ -825,6 +933,30 @@ copyLinkBtn?.addEventListener("click", () => {
   if (dynamicLink.href) {
     navigator.clipboard.writeText(dynamicLink.href);
     setStatus("Link copied to clipboard!");
+  }
+});
+
+myQrList?.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+
+  const shortToCopy = target.getAttribute("data-copy-short");
+  if (shortToCopy) {
+    navigator.clipboard.writeText(decodeURIComponent(shortToCopy));
+    setLibraryStatus("Short link copied.");
+    return;
+  }
+
+  const slugToFill = target.getAttribute("data-fill-slug");
+  const targetToFill = target.getAttribute("data-fill-target");
+  if (slugToFill) {
+    typeDynamic.checked = true;
+    setQRMode("dynamic");
+    dynamicSlug.value = slugToFill;
+    dynamicTarget.value = targetToFill ? decodeURIComponent(targetToFill) : "";
+    dynamicUpdate.checked = true;
+    switchTab("generator");
+    setStatus("Loaded selected dynamic QR into generator.");
   }
 });
 

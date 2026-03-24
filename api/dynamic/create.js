@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const { getValue, setValue } = require("../_lib/kv");
 const { verifyIdToken } = require("../_lib/auth");
+const { upsertUserQr } = require("../_lib/library");
 
 function parseBody(req) {
   if (!req.body) return {};
@@ -67,26 +68,47 @@ module.exports = async function handler(req, res) {
     slug = randomSlug();
   }
 
+  const host = req.headers.host;
+  const proto = req.headers["x-forwarded-proto"] || "https";
+  const shortUrl = `${proto}://${host}/r/${slug}`;
+  const now = new Date().toISOString();
+
   const key = `qr:${slug}`;
-  const existing = await getValue(key);
+  let existing;
+  try {
+    existing = await getValue(key);
+  } catch (error) {
+    res.status(500).json({ error: error.message || "Dynamic storage is unavailable." });
+    return;
+  }
+
   if (existing) {
     res.status(409).json({ error: "Slug already exists. Enable update or choose another slug." });
     return;
   }
 
-  await setValue(
-    key,
-    JSON.stringify({
-      targetUrl,
-      userId: user.uid,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    })
-  );
+  try {
+    await setValue(
+      key,
+      JSON.stringify({
+        targetUrl,
+        userId: user.uid,
+        createdAt: now,
+        updatedAt: now
+      })
+    );
 
-  const host = req.headers.host;
-  const proto = req.headers["x-forwarded-proto"] || "https";
-  const shortUrl = `${proto}://${host}/r/${slug}`;
+    await upsertUserQr(user.uid, {
+      slug,
+      targetUrl,
+      shortUrl,
+      createdAt: now,
+      updatedAt: now
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message || "Failed to save dynamic link." });
+    return;
+  }
 
   res.status(200).json({ slug, shortUrl, targetUrl });
 };

@@ -943,9 +943,72 @@ textarea:focus {
 .library-section,
 .analytics-section {
   min-height: 220px;
-  display: grid;
-  place-items: center;
   text-align: center;
+}
+
+.library-section {
+  display: block;
+  text-align: left;
+}
+
+.library-header {
+  margin-bottom: 14px;
+}
+
+.my-qr-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.my-qr-item {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-2);
+  padding: 12px;
+}
+
+.my-qr-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.my-qr-slug {
+  font-weight: 800;
+  color: #1747a3;
+  font-size: 0.9rem;
+}
+
+.my-qr-date {
+  color: var(--ink-subtle);
+  font-size: 0.78rem;
+}
+
+.my-qr-link,
+.my-qr-target {
+  display: block;
+  font-size: 0.82rem;
+  padding: 8px 10px;
+  border: 1px solid #d2def0;
+  border-radius: 8px;
+  background: #fff;
+  word-break: break-all;
+  margin-bottom: 8px;
+}
+
+.my-qr-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.my-qr-actions .btn {
+  min-height: 30px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
 }
 
 .text-muted {

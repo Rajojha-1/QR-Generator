@@ -1,5 +1,6 @@
 const { getValue, setValue } = require("../_lib/kv");
 const { verifyIdToken } = require("../_lib/auth");
+const { upsertUserQr } = require("../_lib/library");
 
 function parseBody(req) {
   if (!req.body) return {};
@@ -65,7 +66,14 @@ module.exports = async function handler(req, res) {
   }
 
   const key = `qr:${slug}`;
-  const existing = await getValue(key);
+  let existing;
+  try {
+    existing = await getValue(key);
+  } catch (error) {
+    res.status(500).json({ error: error.message || "Dynamic storage is unavailable." });
+    return;
+  }
+
   if (!existing) {
     res.status(404).json({ error: "Slug not found. Create it first." });
     return;
@@ -84,19 +92,34 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  await setValue(
-    key,
-    JSON.stringify({
-      targetUrl,
-      userId: user.uid,
-      createdAt: existingData.createdAt || new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    })
-  );
-
   const host = req.headers.host;
   const proto = req.headers["x-forwarded-proto"] || "https";
   const shortUrl = `${proto}://${host}/r/${slug}`;
+  const createdAt = existingData.createdAt || new Date().toISOString();
+  const updatedAt = new Date().toISOString();
+
+  try {
+    await setValue(
+      key,
+      JSON.stringify({
+        targetUrl,
+        userId: user.uid,
+        createdAt,
+        updatedAt
+      })
+    );
+
+    await upsertUserQr(user.uid, {
+      slug,
+      targetUrl,
+      shortUrl,
+      createdAt,
+      updatedAt
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message || "Failed to update dynamic link." });
+    return;
+  }
 
   res.status(200).json({ slug, shortUrl, targetUrl });
 };

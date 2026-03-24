@@ -1,6 +1,10 @@
 const memoryStore = globalThis.__qrDynamicStore || new Map();
 globalThis.__qrDynamicStore = memoryStore;
 
+function isProductionRuntime() {
+  return process.env.VERCEL_ENV === "production" || process.env.NODE_ENV === "production";
+}
+
 function getKvConfig() {
   const baseUrl = process.env.KV_REST_API_URL || process.env.VERCEL_KV_REST_API_URL || "";
   const token = process.env.KV_REST_API_TOKEN || process.env.VERCEL_KV_REST_API_TOKEN || "";
@@ -10,6 +14,9 @@ function getKvConfig() {
 async function kvRest(path) {
   const { baseUrl, token } = getKvConfig();
   if (!baseUrl || !token) {
+    if (isProductionRuntime()) {
+      throw new Error("KV storage is not configured. Set KV_REST_API_URL and KV_REST_API_TOKEN in Vercel.");
+    }
     return null;
   }
 

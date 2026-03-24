@@ -12,7 +12,14 @@ module.exports = async function handler(req, res) {
   }
 
   const key = `qr:${slug}`;
-  const raw = await getValue(key);
+  let raw;
+  try {
+    raw = await getValue(key);
+  } catch (error) {
+    res.status(500).send(error.message || "Dynamic storage is unavailable");
+    return;
+  }
+
   if (!raw) {
     res.status(404).send("Dynamic link not found");
     return;

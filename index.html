@@ -395,8 +395,13 @@
                 <!-- Library Tab -->
                 <div class="tab-content" id="tab-library">
                     <div class="library-section">
-                        <h2>My QR Codes</h2>
-                        <p class="text-muted">Saved assets, campaign groups, and brand templates appear here.</p>
+                        <div class="library-header">
+                            <h2>My QR Codes</h2>
+                            <p class="text-muted">Your dynamic QR links are saved here automatically.</p>
+                        </div>
+                        <p id="libraryStatus" class="status-message"></p>
+                        <p id="libraryEmptyState" class="text-muted">No dynamic QR codes yet. Generate one from the Generator tab.</p>
+                        <div id="myQrList" class="my-qr-list"></div>
                     </div>
                 </div>
 
