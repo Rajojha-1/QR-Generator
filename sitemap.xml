@@ -5,7 +5,7 @@
   
   <!-- Homepage -->
   <url>
-    <loc>https://qrpro.vercel.app/</loc>
+    <loc>https://qr-generator-two-black.vercel.app/</loc>
     <lastmod>2026-03-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -14,7 +14,7 @@
   
   <!-- Features Section -->
   <url>
-    <loc>https://qrpro.vercel.app/#features</loc>
+    <loc>https://qr-generator-two-black.vercel.app/#features</loc>
     <lastmod>2026-03-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -23,7 +23,7 @@
   
   <!-- Pricing Section -->
   <url>
-    <loc>https://qrpro.vercel.app/#pricing</loc>
+    <loc>https://qr-generator-two-black.vercel.app/#pricing</loc>
     <lastmod>2026-03-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -32,7 +32,7 @@
   
   <!-- Documentation Section -->
   <url>
-    <loc>https://qrpro.vercel.app/#docs</loc>
+    <loc>https://qr-generator-two-black.vercel.app/#docs</loc>
     <lastmod>2026-03-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -41,7 +41,7 @@
   
   <!-- Contact Section -->
   <url>
-    <loc>https://qrpro.vercel.app/#contact</loc>
+    <loc>https://qr-generator-two-black.vercel.app/#contact</loc>
     <lastmod>2026-03-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
