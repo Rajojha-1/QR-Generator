@@ -1,0 +1,28 @@
+# QR Pro - robots.txt
+# This file guides search engine crawlers
+
+# Allow all search engines to crawl the site
+User-agent: *
+Allow: /
+Disallow: /.env
+Disallow: /.git
+Disallow: /.vercel
+Disallow: /.env.example
+Disallow: /api/
+Disallow: /node_modules/
+
+# Specific rules for Google
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Specific rules for Bingbot
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+# Sitemap location
+Sitemap: https://qr-generator-two-black.vercel.app/
+
+# Cache settings
+Request-rate: 1 request per 1 second

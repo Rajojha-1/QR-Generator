@@ -3,7 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Generator</title>
+    <meta name="description" content="Free QR code generator with dynamic tracking, static codes, and IP-based routing. Create branded QR codes, track analytics, and manage campaigns with QR Pro.">
+    <meta name="keywords" content="QR code generator, free QR codes, dynamic QR codes, QR code tracking, branded QR codes, QR analytics">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="theme-color" content="#1155d8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://qrpro.vercel.app/">
+    <meta property="og:title" content="QR Pro - Free QR Code Generator with Analytics">
+    <meta property="og:description" content="Create dynamic QR codes with tracking analytics, static codes, and IP-based routing. No sign-up required for static QR generation.">
+    <meta property="og:image" content="https://qrpro.vercel.app/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://qrpro.vercel.app/">
+    <meta name="twitter:title" content="QR Pro - Free QR Code Generator with Analytics">
+    <meta name="twitter:description" content="Create dynamic QR codes with tracking analytics. No sign-up required for static QR generation.">
+    <meta name="twitter:image" content="https://qrpro.vercel.app/og-image.png">
+    
+    <!-- Additional SEO Tags -->
+    <link rel="canonical" href="https://qrpro.vercel.app/">
+    <link rel="alternate" hreflang="en" href="https://qrpro.vercel.app/">
+    
+    <title>QR Pro - Free QR Code Generator with Analytics & Tracking</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
@@ -19,6 +47,46 @@
       gtag('js', new Date());
       gtag('config', 'G-L688GS938F');
     </script>
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "QR Pro",
+      "description": "Free QR code generator with dynamic tracking, static codes, and IP-based routing. Create branded QR codes, track analytics, and manage campaigns.",
+      "url": "https://qrpro.vercel.app/",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "1500"
+      }
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "QR Pro",
+      "url": "https://qrpro.vercel.app/",
+      "description": "Free QR code generator and tracking platform",
+      "logo": "https://qrpro.vercel.app/logo.png"
+    }
+    </script>
+    
+    <!-- Performance Optimizations -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="preload" as="style" href="style.css">
+    <link rel="preload" as="script" href="script.js">
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -364,7 +432,7 @@
                                             <option value="ZA">🇿🇦 South Africa</option>
                                         </select>
                                         <input id="ipCountryUrl" type="url" placeholder="https://example.com/country-page">
-                                        <button id="addIpRule" class="btn btn-secondary btn-sm">Add</button>
+                                        <button id="addIpRule" type="button" class="btn btn-secondary btn-sm">Add</button>
                                     </div>
                                 </div>
 

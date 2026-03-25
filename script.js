@@ -1253,4 +1253,4 @@ updateDynamicLockStatus(); // Lock dynamic QR until user signs in
 
 // Initialize IP rules display
 renderIpRules();
-console.log("📝 IP rules initialized. Current rules:", ipRules);
+console.log(" IP rules initialized. Current rules:", ipRules);
